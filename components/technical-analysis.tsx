@@ -196,6 +196,14 @@ export function TechnicalAnalysis({ symbol, ltp, high, low }: TechnicalAnalysisP
                       <TableCell className="text-right font-medium">{formatNumber(ltpValue)}</TableCell>
                     </TableRow>
                     <TableRow>
+                      <TableCell>MA20</TableCell>
+                      <TableCell className="text-right">{ma20.value ? formatNumber(ma20.value) : "-"}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>MA180</TableCell>
+                      <TableCell className="text-right">{ma180.value ? formatNumber(ma180.value) : "-"}</TableCell>
+                    </TableRow>
+                    <TableRow>
                       <TableCell>Support 1</TableCell>
                       <TableCell className="text-right">{formatNumber(supportResistance.s1)}</TableCell>
                     </TableRow>
