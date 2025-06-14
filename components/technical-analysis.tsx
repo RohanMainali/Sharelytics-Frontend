@@ -222,91 +222,115 @@ export function TechnicalAnalysis({ symbol, ltp, high, low }: TechnicalAnalysisP
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    <TableRow>
-                      <TableCell>RSI</TableCell>
-                      <TableCell>{rsi.value.toFixed(2)}</TableCell>
-                      <TableCell>
-                        <Badge
-                          className={
-                            rsi.signal === "BULLISH"
-                              ? "bg-green-600"
-                              : rsi.signal === "BEARISH"
-                                ? "bg-red-600"
-                                : "bg-yellow-600"
-                          }
-                        >
-                          {rsi.signal}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>MACD</TableCell>
-                      <TableCell>{technicalData?.macd?.value.toFixed(2) || "-"}</TableCell>
-                      <TableCell>
-                        <Badge
-                          className={
-                            macdSignal === "BULLISH"
-                              ? "bg-green-600"
-                              : macdSignal === "BEARISH"
-                                ? "bg-red-600"
-                                : "bg-yellow-600"
-                          }
-                        >
-                          {macdSignal}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>MA5</TableCell>
-                      <TableCell>{ma5.value ? formatNumber(ma5.value) : "-"}</TableCell>
-                      <TableCell>
-                        <Badge
-                          className={
-                            ma5.signal === "BULLISH"
-                              ? "bg-green-600"
-                              : ma5.signal === "BEARISH"
-                                ? "bg-red-600"
-                                : "bg-yellow-600"
-                          }
-                        >
-                          {ma5.signal}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>MA20</TableCell>
-                      <TableCell>{ma20.value ? formatNumber(ma20.value) : "-"}</TableCell>
-                      <TableCell>
-                        <Badge
-                          className={
-                            ma20.signal === "BULLISH"
-                              ? "bg-green-600"
-                              : ma20.signal === "BEARISH"
-                                ? "bg-red-600"
-                                : "bg-yellow-600"
-                          }
-                        >
-                          {ma20.signal}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>MA180</TableCell>
-                      <TableCell>{ma180.value ? formatNumber(ma180.value) : "-"}</TableCell>
-                      <TableCell>
-                        <Badge
-                          className={
-                            ma180.signal === "BULLISH"
-                              ? "bg-green-600"
-                              : ma180.signal === "BEARISH"
-                                ? "bg-red-600"
-                                : "bg-yellow-600"
-                          }
-                        >
-                          {ma180.signal}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
+                    {technicalData?.oscillators && technicalData.oscillators.length > 0 ? (
+                      technicalData.oscillators.map((osc, idx) => (
+                        <TableRow key={osc.name + idx}>
+                          <TableCell>{osc.name}</TableCell>
+                          <TableCell>{typeof osc.value === 'number' ? osc.value.toFixed(2) : osc.value}</TableCell>
+                          <TableCell>
+                            <Badge
+                              className={
+                                osc.action?.toUpperCase() === "BULLISH"
+                                  ? "bg-green-600"
+                                  : osc.action?.toUpperCase() === "BEARISH"
+                                    ? "bg-red-600"
+                                    : "bg-yellow-600"
+                              }
+                            >
+                              {osc.action}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <>
+                        <TableRow>
+                          <TableCell>RSI</TableCell>
+                          <TableCell>{rsi.value.toFixed(2)}</TableCell>
+                          <TableCell>
+                            <Badge
+                              className={
+                                rsi.signal === "BULLISH"
+                                  ? "bg-green-600"
+                                  : rsi.signal === "BEARISH"
+                                    ? "bg-red-600"
+                                    : "bg-yellow-600"
+                              }
+                            >
+                              {rsi.signal}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>MACD</TableCell>
+                          <TableCell>{technicalData?.macd?.value.toFixed(2) || "-"}</TableCell>
+                          <TableCell>
+                            <Badge
+                              className={
+                                macdSignal === "BULLISH"
+                                  ? "bg-green-600"
+                                  : macdSignal === "BEARISH"
+                                    ? "bg-red-600"
+                                    : "bg-yellow-600"
+                              }
+                            >
+                              {macdSignal}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>MA5</TableCell>
+                          <TableCell>{ma5.value ? formatNumber(ma5.value) : "-"}</TableCell>
+                          <TableCell>
+                            <Badge
+                              className={
+                                ma5.signal === "BULLISH"
+                                  ? "bg-green-600"
+                                  : ma5.signal === "BEARISH"
+                                    ? "bg-red-600"
+                                    : "bg-yellow-600"
+                              }
+                            >
+                              {ma5.signal}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>MA20</TableCell>
+                          <TableCell>{ma20.value ? formatNumber(ma20.value) : "-"}</TableCell>
+                          <TableCell>
+                            <Badge
+                              className={
+                                ma20.signal === "BULLISH"
+                                  ? "bg-green-600"
+                                  : ma20.signal === "BEARISH"
+                                    ? "bg-red-600"
+                                    : "bg-yellow-600"
+                              }
+                            >
+                              {ma20.signal}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>MA180</TableCell>
+                          <TableCell>{ma180.value ? formatNumber(ma180.value) : "-"}</TableCell>
+                          <TableCell>
+                            <Badge
+                              className={
+                                ma180.signal === "BULLISH"
+                                  ? "bg-green-600"
+                                  : ma180.signal === "BEARISH"
+                                    ? "bg-red-600"
+                                    : "bg-yellow-600"
+                              }
+                            >
+                              {ma180.signal}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      </>
+                    )}
                   </TableBody>
                 </Table>
               </div>
@@ -315,53 +339,59 @@ export function TechnicalAnalysis({ symbol, ltp, high, low }: TechnicalAnalysisP
             <div className="p-4 border rounded-md bg-gray-50">
               <h3 className="font-medium mb-2">Analysis Summary</h3>
               <p className="text-sm">
-                {overallSignal === "Bullish" ? (
+                {technicalData?.oscillators && technicalData.oscillators.length > 0 ? (
                   <>
-                    The technical indicators for {symbol} are showing a{" "}
-                    <span className="font-medium text-green-600">bullish</span> signal. The stock is trading{" "}
-                    {ltpValue < supportResistance.s1 ? "below support level" : "above support level"} with RSI at{" "}
-                    {rsi.value.toFixed(2)}.{" "}
-                    {ma5.value > 0 && ma20.value > 0
-                      ? `MA5 (${formatNumber(ma5.value)}) is ${ma5.value > ma20.value ? "above" : "below"} MA20 (${formatNumber(ma20.value)}).`
-                      : ""}{" "}
-                    Consider watching for entry points near support levels.
-                  </>
-                ) : overallSignal === "Bearish" ? (
-                  <>
-                    The technical indicators for {symbol} are showing a{" "}
-                    <span className="font-medium text-red-600">bearish</span> signal. The stock is trading{" "}
-                    {ltpValue > supportResistance.r1 ? "above resistance level" : "below resistance level"} with RSI at{" "}
-                    {rsi.value.toFixed(2)}.{" "}
-                    {ma5.value > 0 && ma20.value > 0
-                      ? `MA5 (${formatNumber(ma5.value)}) is ${ma5.value > ma20.value ? "above" : "below"} MA20 (${formatNumber(ma20.value)}).`
-                      : ""}{" "}
-                    Consider caution and watch for potential reversal patterns.
+                    {overallSignal === "Bullish" && (
+                      <>
+                        <span className="font-medium text-green-600">Bullish outlook:</span> Most technical oscillators are signaling a positive trend for <span className="font-semibold">{symbol}</span>. <br />
+                      </>
+                    )}
+                    {overallSignal === "Bearish" && (
+                      <>
+                        <span className="font-medium text-red-600">Bearish outlook:</span> Most technical oscillators are signaling caution for <span className="font-semibold">{symbol}</span>. <br />
+                      </>
+                    )}
+                    {overallSignal === "Neutral" && (
+                      <>
+                        <span className="font-medium text-yellow-600">Neutral outlook:</span> The technical oscillators are mixed for <span className="font-semibold">{symbol}</span>. <br />
+                      </>
+                    )}
+                    <ul className="list-disc ml-6 mt-2">
+                      {technicalData.oscillators.map((osc, idx) => (
+                        <li key={osc.name + idx}>
+                          <span className="font-semibold">{osc.name}:</span> {typeof osc.value === 'number' ? osc.value.toFixed(2) : osc.value} (
+                          <span className={
+                            osc.action?.toUpperCase() === "BULLISH"
+                              ? "text-green-600"
+                              : osc.action?.toUpperCase() === "BEARISH"
+                                ? "text-red-600"
+                                : "text-yellow-600"
+                          }>
+                            {osc.action}
+                          </span>
+                          )
+                        </li>
+                      ))}
+                    </ul>
+                    <span className="block mt-2">Always consider multiple indicators and market context before making trading decisions.</span>
                   </>
                 ) : (
                   <>
-                    The technical indicators for {symbol} are showing a{" "}
-                    <span className="font-medium text-yellow-600">neutral</span> signal. The stock is trading between
-                    support and resistance levels with RSI at {rsi.value.toFixed(2)}.{" "}
-                    {ma5.value > 0 && ma20.value > 0
-                      ? `MA5 (${formatNumber(ma5.value)}) is ${ma5.value > ma20.value ? "above" : "below"} MA20 (${formatNumber(ma20.value)}).`
-                      : ""}{" "}
-                    Consider waiting for clearer signals before making trading decisions.
+                    {overallSignal === "Bullish" ? (
+                      <>
+                        The technical indicators for {symbol} are showing a <span className="font-medium text-green-600">bullish</span> signal. The stock is trading {ltpValue < supportResistance.s1 ? "below support level" : "above support level"} with RSI at {rsi.value.toFixed(2)}. {ma5.value > 0 && ma20.value > 0 ? `MA5 (${formatNumber(ma5.value)}) is ${ma5.value > ma20.value ? "above" : "below"} MA20 (${formatNumber(ma20.value)}).` : ""} Consider watching for entry points near support levels.
+                      </>
+                    ) : overallSignal === "Bearish" ? (
+                      <>
+                        The technical indicators for {symbol} are showing a <span className="font-medium text-red-600">bearish</span> signal. The stock is trading {ltpValue > supportResistance.r1 ? "above resistance level" : "below resistance level"} with RSI at {rsi.value.toFixed(2)}. {ma5.value > 0 && ma20.value > 0 ? `MA5 (${formatNumber(ma5.value)}) is ${ma5.value > ma20.value ? "above" : "below"} MA20 (${formatNumber(ma20.value)}).` : ""} Consider caution and watch for potential reversal patterns.
+                      </>
+                    ) : (
+                      <>
+                        The technical indicators for {symbol} are showing a <span className="font-medium text-yellow-600">neutral</span> signal. The stock is trading between support and resistance levels with RSI at {rsi.value.toFixed(2)}. {ma5.value > 0 && ma20.value > 0 ? `MA5 (${formatNumber(ma5.value)}) is ${ma5.value > ma20.value ? "above" : "below"} MA20 (${formatNumber(ma20.value)}).` : ""} Consider waiting for clearer signals before making trading decisions.
+                      </>
+                    )}
                   </>
                 )}
-              </p>
-            </div>
-
-            <div className="text-xs text-muted-foreground">
-              <p>
-                Technical data sourced from{" "}
-                <a
-                  href={`https://www.sharesansar.com/company/${symbol}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline"
-                >
-                  ShareSansar
-                </a>
               </p>
             </div>
           </div>

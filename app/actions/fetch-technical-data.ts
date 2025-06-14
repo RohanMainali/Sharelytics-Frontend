@@ -19,6 +19,7 @@ export interface TechnicalIndicators {
     r3: number
     pivot: number
   }
+  oscillators?: Array<{ name: string; value: number; action: string }>
 }
 
 export async function fetchTechnicalData(symbol: string): Promise<TechnicalIndicators | null> {
@@ -53,6 +54,7 @@ export async function fetchTechnicalData(symbol: string): Promise<TechnicalIndic
         r3: 0,
         pivot: 0,
       },
+      oscillators: [],
     }
 
     // Extract Moving Averages
@@ -181,6 +183,68 @@ export async function fetchTechnicalData(symbol: string): Promise<TechnicalIndic
             macdFound = true
           }
         }
+      })
+    }
+
+    // Fetch technicals from ShareHubNepal API (preferred over scraping)
+    try {
+      const apiRes = await fetch(`https://sharehubnepal.com/data/api/v1/technical-analysis/technical-ratings/${symbol.toUpperCase()}`)
+      if (apiRes.ok) {
+        const apiJson = await apiRes.json()
+        // MACD, RSI, and all oscillators from oscillatorRating
+        if (apiJson?.data?.oscillatorRating?.ratings) {
+          technicalData.oscillators = apiJson.data.oscillatorRating.ratings.map((item: any) => ({
+            name: item.name,
+            value: item.value,
+            action: item.action
+          }))
+          // For backward compatibility, still set macd/rsi if present
+          for (const item of apiJson.data.oscillatorRating.ratings) {
+            if (item.name && item.name.toUpperCase().includes("MACD")) {
+              technicalData.macd.value = item.value
+              technicalData.macd.signal = item.action?.toUpperCase() || technicalData.macd.signal
+            }
+            if (item.name && item.name.toUpperCase().includes("RSI")) {
+              technicalData.rsi.value = item.value
+              technicalData.rsi.signal = item.action?.toUpperCase() || technicalData.rsi.signal
+            }
+          }
+        }
+      }
+    } catch (err) {
+      // fallback to scraping if needed
+    }
+
+    // Fetch the technical analysis page from sharehubnepal
+    const sharehubRes = await fetch(`https://sharehubnepal.com/company/${symbol}/technical-analysis`, {
+      cache: "no-store",
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+      }
+    })
+    if (sharehubRes.ok) {
+      const sharehubHtml = await sharehubRes.text()
+      const $sharehub = cheerio.load(sharehubHtml)
+      // Search all tables for MACD and RSI rows (case-insensitive, partial match)
+      $sharehub('table').each((i, table) => {
+        $sharehub(table).find('tr').each((j, row) => {
+          const cells = $sharehub(row).find('td')
+          if (cells.length >= 3) {
+            const label = $sharehub(cells[0]).text().trim().toUpperCase()
+            const valueText = $sharehub(cells[1]).text().trim()
+            const value = Number.parseFloat(valueText.replace(/,/g, ""))
+            const signalDiv = $sharehub(cells[2]).find('div').first()
+            const signal = signalDiv.length ? signalDiv.text().trim().toUpperCase() : $sharehub(cells[2]).text().trim().toUpperCase()
+            if (label.includes("MACD")) {
+              if (!isNaN(value)) technicalData.macd.value = value
+              technicalData.macd.signal = signal || technicalData.macd.signal
+            }
+            if (label.includes("RSI")) {
+              if (!isNaN(value)) technicalData.rsi.value = value
+              technicalData.rsi.signal = signal || technicalData.rsi.signal
+            }
+          }
+        })
       })
     }
 
