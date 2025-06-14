@@ -1,0 +1,31 @@
+/* Custom styles for tabs */
+.tabs-container {
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.tabs-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.tabs-container::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.tabs-container::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Ensure tabs are properly sized */
+.tabs-list {
+  display: flex;
+  flex-wrap: nowrap;
+  min-width: max-content;
+}
+
+@media (max-width: 768px) {
+  .tabs-list {
+    flex-wrap: wrap;
+  }
+}
