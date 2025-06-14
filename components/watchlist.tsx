@@ -10,7 +10,7 @@ import { formatNumber, getChangeColor } from "@/lib/utils"
 import { debounce } from "lodash-es"
 import { fetchSharesansarData } from "@/app/actions/fetch-sharesansar-data"
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5050"
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://sharelytics-backend.onrender.com"
 
 interface WatchlistProps {
   onSelectSymbol: (symbol: string) => void

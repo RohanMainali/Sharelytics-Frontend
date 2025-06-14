@@ -1,5 +1,5 @@
 // Test script to verify backend endpoints
-const BACKEND_URL = "http://localhost:5050";
+const BACKEND_URL = "https://sharelytics-backend.onrender.com";
 
 async function testBackend() {
   console.log("Testing backend endpoints...");

@@ -26,7 +26,7 @@ import {
 } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5050"
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://sharelytics-backend.onrender.com"
 
 interface UserProfile {
   email: string

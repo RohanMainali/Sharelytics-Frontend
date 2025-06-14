@@ -12,7 +12,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recha
 import { Plus, Trash2, Edit } from "lucide-react"
 import { fetchMerolaganiData } from "@/app/actions/fetch-merolagani-data"
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5050"
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://sharelytics-backend.onrender.com"
 
 interface PortfolioStock {
   id: string
