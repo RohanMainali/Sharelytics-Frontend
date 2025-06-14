@@ -47,7 +47,7 @@ A comprehensive authentication system has been successfully implemented for the 
 cd backend
 npm install
 npm run dev
-# Server starts on http://localhost:5050
+# Server starts on https://sharelytics-backend.onrender.com
 ```
 
 ### Frontend Application
