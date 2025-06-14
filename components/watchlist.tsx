@@ -123,8 +123,20 @@ export function Watchlist({ onSelectSymbol }: WatchlistProps) {
     }
   }
 
-  const removeSymbol = (symbolToRemove: string) => {
-    setSymbols(symbols.filter((s) => s !== symbolToRemove))
+  const removeSymbol = async (symbolToRemove: string) => {
+    const token = localStorage.getItem("token")
+    if (!token) return
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/user/watchlist/${symbolToRemove}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (res.ok) {
+        setSymbols(symbols.filter((s) => s !== symbolToRemove))
+      }
+    } catch (err) {
+      // Optionally handle error
+    }
   }
 
   return (

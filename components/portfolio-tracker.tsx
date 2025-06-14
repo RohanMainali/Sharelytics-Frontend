@@ -15,7 +15,7 @@ import { fetchMerolaganiData } from "@/app/actions/fetch-merolagani-data"
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://sharelytics-backend.onrender.com"
 
 interface PortfolioStock {
-  id: string
+  _id?: string
   symbol: string
   quantity: number
   buyPrice: number
@@ -91,7 +91,6 @@ export function PortfolioTracker() {
     if (!newStock.symbol || newStock.quantity <= 0 || newStock.buyPrice <= 0) {
       return
     }
-
     setLoading(true)
     try {
       // Fetch current price from merolagani
@@ -110,9 +109,7 @@ export function PortfolioTracker() {
       const investment = newStock.quantity * newStock.buyPrice
       const profitLoss = value - investment
       const profitLossPercentage = (profitLoss / investment) * 100
-
-      const newPortfolioStock: PortfolioStock = {
-        id: Date.now().toString(),
+      const newPortfolioStock: Omit<PortfolioStock, '_id'> = {
         symbol: newStock.symbol.toUpperCase(),
         quantity: newStock.quantity,
         buyPrice: newStock.buyPrice,
@@ -123,9 +120,23 @@ export function PortfolioTracker() {
         lastUpdated: new Date(),
       }
 
-      setPortfolio((prev) => [...prev, newPortfolioStock])
-      setNewStock({ symbol: "", quantity: 0, buyPrice: 0 })
-      setIsAddDialogOpen(false)
+      // Save to backend and reload
+      const token = localStorage.getItem("token")
+      if (!token) return
+      const res = await fetch(`${BACKEND_URL}/api/user/portfolio`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ portfolio: [...portfolio, newPortfolioStock] })
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setPortfolio(data.portfolio || [])
+        setNewStock({ symbol: "", quantity: 0, buyPrice: 0 })
+        setIsAddDialogOpen(false)
+      }
     } catch (error) {
       console.error("Error adding stock to portfolio:", error)
       alert("Failed to add stock. Please check the symbol and try again.")
@@ -138,7 +149,6 @@ export function PortfolioTracker() {
     if (!editingStock || editingStock.quantity <= 0 || editingStock.buyPrice <= 0) {
       return
     }
-
     setLoading(true)
     try {
       // Fetch current price from merolagani
@@ -167,9 +177,27 @@ export function PortfolioTracker() {
         lastUpdated: new Date(),
       }
 
-      setPortfolio((prev) => prev.map((stock) => (stock.id === editingStock.id ? updatedStock : stock)))
-      setEditingStock(null)
-      setIsEditDialogOpen(false)
+      const updatedPortfolio = portfolio.map((stock) =>
+        stock._id === editingStock._id ? updatedStock : stock
+      )
+
+      // Save to backend and reload
+      const token = localStorage.getItem("token")
+      if (!token) return
+      const res = await fetch(`${BACKEND_URL}/api/user/portfolio`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ portfolio: updatedPortfolio })
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setPortfolio(data.portfolio || [])
+        setEditingStock(null)
+        setIsEditDialogOpen(false)
+      }
     } catch (error) {
       console.error("Error updating stock in portfolio:", error)
       alert("Failed to update stock. Please try again.")
@@ -178,9 +206,21 @@ export function PortfolioTracker() {
     }
   }
 
-  const handleDeleteStock = (id: string) => {
+  const handleDeleteStock = async (_id: string) => {
     if (confirm("Are you sure you want to remove this stock from your portfolio?")) {
-      setPortfolio((prev) => prev.filter((stock) => stock.id !== id))
+      const token = localStorage.getItem("token")
+      if (!token) return
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/user/portfolio/${_id}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        if (res.ok) {
+          setPortfolio((prev) => prev.filter((stock) => stock._id !== _id))
+        }
+      } catch (err) {
+        // Optionally handle error
+      }
     }
   }
 
@@ -351,7 +391,7 @@ export function PortfolioTracker() {
                   </TableHeader>
                   <TableBody>
                     {portfolio.map((stock) => (
-                      <TableRow key={stock.id}>
+                      <TableRow key={stock._id}>
                         <TableCell className="font-medium">{stock.symbol}</TableCell>
                         <TableCell>{stock.quantity}</TableCell>
                         <TableCell>{formatNumber(stock.buyPrice)}</TableCell>
@@ -362,7 +402,7 @@ export function PortfolioTracker() {
                         <TableCell>
                           <div className="flex space-x-1">
                             <Dialog
-                              open={isEditDialogOpen && editingStock?.id === stock.id}
+                              open={isEditDialogOpen && editingStock?._id === stock._id}
                               onOpenChange={(open) => {
                                 setIsEditDialogOpen(open)
                                 if (!open) setEditingStock(null)
@@ -408,7 +448,7 @@ export function PortfolioTracker() {
                                 )}
                               </DialogContent>
                             </Dialog>
-                            <Button variant="ghost" size="icon" onClick={() => handleDeleteStock(stock.id)}>
+                            <Button variant="ghost" size="icon" onClick={() => handleDeleteStock(stock._id!)}>
                               <Trash2 className="h-4 w-4 text-red-500" />
                             </Button>
                           </div>
