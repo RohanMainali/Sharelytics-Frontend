@@ -41,9 +41,15 @@ export function Header() {
         if (response.ok) {
           const userData = await response.json()
           setUser(userData)
+        } else {
+          // If backend is down or unauthorized, force logout
+          localStorage.removeItem("token")
+          window.location.href = "/login"
         }
       } catch (error) {
-        console.error("Failed to fetch user data:", error)
+        // If backend is unreachable, force logout
+        localStorage.removeItem("token")
+        window.location.href = "/login"
       }
     }
 
