@@ -4,7 +4,8 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { type MerolaganiStock, fetchMerolaganiData } from "@/app/actions/fetch-merolagani-data"
+import { type MerolaganiStock } from "@/app/actions/fetch-merolagani-data"
+import { fetchCachedStockDetail } from "@/lib/cache-client"
 import { formatNumber, getChangeColor } from "@/lib/utils"
 import { StockChart } from "@/components/stock-chart"
 import { FundamentalAnalysis } from "@/components/fundamental-analysis"
@@ -28,7 +29,7 @@ export function StockDetail({ symbol }: StockDetailProps) {
     const fetchData = async () => {
       setLoading(true)
       try {
-        const data = await fetchMerolaganiData(symbol)
+        const { data } = await fetchCachedStockDetail(symbol)
         setStockData(data)
       } catch (error) {
         console.error("Error fetching stock details:", error)
@@ -39,8 +40,8 @@ export function StockDetail({ symbol }: StockDetailProps) {
 
     fetchData()
 
-    // Set up polling for real-time updates
-    const intervalId = setInterval(fetchData, 30000) // Update every 30 seconds
+    // Poll from cache every 30s (cache is refreshed by server heartbeat)
+    const intervalId = setInterval(fetchData, 30000)
 
     return () => clearInterval(intervalId)
   }, [symbol])

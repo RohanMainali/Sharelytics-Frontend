@@ -8,6 +8,10 @@ export type SharesansarStock = {
   symbol: string
   company: string
   ltp: string
+  eps?: string | number
+  bookValue?: string | number
+  pbv?: string | number
+  peRatio?: string | number
   pointChange: string
   percentChange: string
   open: string
@@ -47,6 +51,10 @@ export async function fetchSharesansarData(): Promise<SharesansarStock[]> {
         symbol,
         company: companyName,
         ltp: $(tds[2]).text().trim(),
+        eps: "N/A",
+        bookValue: "N/A",
+        pbv: "N/A",
+        peRatio: "N/A",
         pointChange: $(tds[3]).text().trim(),
         percentChange: $(tds[4]).text().trim(),
         open: $(tds[5]).text().trim(),

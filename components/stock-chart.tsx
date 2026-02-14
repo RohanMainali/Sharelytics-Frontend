@@ -16,14 +16,25 @@ import {
   BarChart,
   Bar,
 } from "recharts"
-import { fetchHistoricalData, type HistoricalPrice } from "@/app/actions/fetch-historical-data"
+import { fetchCachedPriceHistory } from "@/lib/cache-client"
+
+// Permissive type for chart data that supports indicator properties
+interface ChartDataPoint {
+  date: string
+  open: number
+  high: number
+  low: number
+  close: number
+  volume: number
+  [key: string]: any
+}
 
 interface StockChartProps {
   symbol: string
 }
 
 export function StockChart({ symbol }: StockChartProps) {
-  const [priceData, setPriceData] = useState<HistoricalPrice[]>([])
+  const [priceData, setPriceData] = useState<ChartDataPoint[]>([])
   const [loading, setLoading] = useState(true)
   const [timeframe, setTimeframe] = useState("1M") // 1D, 1W, 1M, 3M, 6M, 1Y, 5Y
   const [indicator, setIndicator] = useState("none") // none, sma, ema, rsi, macd
@@ -36,7 +47,16 @@ export function StockChart({ symbol }: StockChartProps) {
 
     const fetchData = async () => {
       try {
-        const data = await fetchHistoricalData(symbol)
+        const { data: rawData } = await fetchCachedPriceHistory(symbol)
+        // Map to ChartDataPoint format
+        const data: ChartDataPoint[] = rawData.map(item => ({
+          date: item.date,
+          open: item.open,
+          high: item.high,
+          low: item.low,
+          close: item.close,
+          volume: item.volume,
+        }))
 
         // Filter data based on timeframe
         const filteredData = filterDataByTimeframe(data, timeframe)
@@ -56,7 +76,7 @@ export function StockChart({ symbol }: StockChartProps) {
   }, [symbol, timeframe, indicator])
 
   // Filter data based on timeframe
-  const filterDataByTimeframe = (data: HistoricalPrice[], timeframe: string): HistoricalPrice[] => {
+  const filterDataByTimeframe = (data: ChartDataPoint[], timeframe: string): ChartDataPoint[] => {
     if (!data.length) return []
 
     const today = new Date()
@@ -98,7 +118,7 @@ export function StockChart({ symbol }: StockChartProps) {
   }
 
   // Calculate technical indicators
-  const calculateIndicators = (data: HistoricalPrice[], indicator: string): HistoricalPrice[] => {
+  const calculateIndicators = (data: ChartDataPoint[], indicator: string): ChartDataPoint[] => {
     if (indicator === "none" || !data.length) return data
 
     const result = [...data]

@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { formatNumber, getChangeColor } from "@/lib/utils"
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts"
 import { Plus, Trash2, Edit } from "lucide-react"
-import { fetchMerolaganiData } from "@/app/actions/fetch-merolagani-data"
+import { fetchCachedStockDetail } from "@/lib/cache-client"
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://sharelytics-backend.onrender.com"
 
@@ -93,8 +93,8 @@ export function PortfolioTracker() {
     }
     setLoading(true)
     try {
-      // Fetch current price from merolagani
-      const stockData = await fetchMerolaganiData(newStock.symbol.toUpperCase())
+      // Fetch current price from cache
+      const { data: stockData } = await fetchCachedStockDetail(newStock.symbol.toUpperCase())
       const currentPrice =
         typeof stockData.ltp === "number"
           ? stockData.ltp
@@ -151,8 +151,8 @@ export function PortfolioTracker() {
     }
     setLoading(true)
     try {
-      // Fetch current price from merolagani
-      const stockData = await fetchMerolaganiData(editingStock.symbol)
+      // Fetch current price from cache
+      const { data: stockData } = await fetchCachedStockDetail(editingStock.symbol)
       const currentPrice =
         typeof stockData.ltp === "number"
           ? stockData.ltp
@@ -230,7 +230,7 @@ export function PortfolioTracker() {
       const updatedPortfolio = await Promise.all(
         portfolio.map(async (stock) => {
           try {
-            const stockData = await fetchMerolaganiData(stock.symbol)
+            const { data: stockData } = await fetchCachedStockDetail(stock.symbol)
             const currentPrice =
               typeof stockData.ltp === "number"
                 ? stockData.ltp

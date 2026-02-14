@@ -5,10 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Plus, X } from "lucide-react"
-import { type MerolaganiStock, fetchMultipleMerolaganiData } from "@/app/actions/fetch-merolagani-data"
+import { type MerolaganiStock } from "@/app/actions/fetch-merolagani-data"
+import { fetchCachedMultipleStockDetails, fetchCachedStocks } from "@/lib/cache-client"
 import { formatNumber, getChangeColor } from "@/lib/utils"
 import { debounce } from "lodash-es"
-import { fetchSharesansarData } from "@/app/actions/fetch-sharesansar-data"
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://sharelytics-backend.onrender.com"
 
@@ -73,7 +73,7 @@ export function Watchlist({ onSelectSymbol }: WatchlistProps) {
     const fetchData = async () => {
       setLoading(true)
       try {
-        const data = await fetchMultipleMerolaganiData(symbols)
+        const data = await fetchCachedMultipleStockDetails(symbols)
         setStockData(data)
       } catch (error) {
         console.error("Error fetching watchlist data:", error)
@@ -84,8 +84,8 @@ export function Watchlist({ onSelectSymbol }: WatchlistProps) {
 
     fetchData()
 
-    // Set up polling for real-time updates
-    const intervalId = setInterval(fetchData, 60000) // Update every minute
+    // Poll from cache every 30s (server heartbeat refreshes actual data)
+    const intervalId = setInterval(fetchData, 30000)
 
     return () => clearInterval(intervalId)
   }, [symbols])
@@ -98,7 +98,7 @@ export function Watchlist({ onSelectSymbol }: WatchlistProps) {
       return
     }
     try {
-      const stocks = await fetchSharesansarData()
+      const { stocks } = await fetchCachedStocks()
       const matches = stocks.filter(
         s => s.symbol.toLowerCase().includes(query.toLowerCase()) ||
              s.company.toLowerCase().includes(query.toLowerCase())

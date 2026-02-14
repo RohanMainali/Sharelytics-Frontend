@@ -16,7 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { useRouter } from "next/navigation"
 import { debounce } from "lodash-es"
-import { fetchSharesansarData } from "@/app/actions/fetch-sharesansar-data"
+import { fetchCachedStocks } from "@/lib/cache-client"
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "https://sharelytics-backend.onrender.com"
 
@@ -117,7 +117,7 @@ export function Header() {
       return
     }
     try {
-      const stocks = await fetchSharesansarData()
+      const { stocks } = await fetchCachedStocks()
       const matches = stocks.filter(
         s => s.symbol.toLowerCase().includes(query.toLowerCase()) ||
              s.company.toLowerCase().includes(query.toLowerCase())

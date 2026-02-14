@@ -6,7 +6,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { formatNumber } from "@/lib/utils"
-import { fetchTechnicalData, type TechnicalIndicators } from "@/app/actions/fetch-technical-data"
+import { type TechnicalIndicators } from "@/app/actions/fetch-technical-data"
+import { fetchCachedTechnicalData } from "@/lib/cache-client"
 
 interface TechnicalAnalysisProps {
   symbol: string | null
@@ -29,7 +30,7 @@ export function TechnicalAnalysis({ symbol, ltp, high, low }: TechnicalAnalysisP
 
     const fetchData = async () => {
       try {
-        const data = await fetchTechnicalData(symbol)
+        const { data } = await fetchCachedTechnicalData(symbol)
         console.log("Fetched technical data:", data)
         setTechnicalData(data)
       } catch (err) {

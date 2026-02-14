@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ExternalLink } from "lucide-react"
-import { fetchMarketNews, type NewsItem } from "@/app/actions/fetch-market-news"
+import { type NewsItem } from "@/app/actions/fetch-market-news"
+import { fetchCachedNews } from "@/lib/cache-client"
 
 export function MarketNews() {
   const [news, setNews] = useState<NewsItem[]>([])
@@ -16,7 +17,7 @@ export function MarketNews() {
     const fetchNews = async () => {
       setLoading(true)
       try {
-        const data = await fetchMarketNews()
+        const { news: data } = await fetchCachedNews()
         setNews(data)
       } catch (error) {
         console.error("Error fetching news:", error)
@@ -27,8 +28,8 @@ export function MarketNews() {
 
     fetchNews()
 
-    // Refresh news every 15 minutes
-    const intervalId = setInterval(fetchNews, 15 * 60 * 1000)
+    // Poll cache every 2 minutes (server heartbeat refreshes the actual data)
+    const intervalId = setInterval(fetchNews, 2 * 60 * 1000)
 
     return () => clearInterval(intervalId)
   }, [])

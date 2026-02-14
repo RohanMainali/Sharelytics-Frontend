@@ -6,7 +6,8 @@ import { SectorTable } from "@/components/sector-table"
 import { StockDetail } from "@/components/stock-detail"
 import { Watchlist } from "@/components/watchlist"
 import { RefreshButton } from "@/components/refresh-button"
-import { fetchSharesansarData, type SharesansarStock } from "@/app/actions/fetch-sharesansar-data"
+import { type SharesansarStock } from "@/app/actions/fetch-sharesansar-data"
+import { fetchCachedStocks, triggerCacheRefresh, type EnrichedStock } from "@/lib/cache-client"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
 import { groupStocksBySector, type SectorType } from "@/lib/sectors"
 import { SectorNavigation } from "@/components/sector-navigation"
@@ -31,7 +32,7 @@ export default function RootPage() {
     }
   }, [])
 
-  const [stocks, setStocks] = useState<SharesansarStock[]>([])
+  const [stocks, setStocks] = useState<EnrichedStock[]>([])
   const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
   const [loading, setLoading] = useState(true)
@@ -51,17 +52,24 @@ export default function RootPage() {
     Other: [],
   })
 
-  const fetchData = async () => {
+  const fetchData = async (forceRefresh = false) => {
     setLoading(true)
     try {
-      const data = await fetchSharesansarData()
-      setStocks(data)
+      // If force refresh (manual click), trigger server-side rescrape first
+      if (forceRefresh) {
+        await triggerCacheRefresh("all")
+      }
+
+      // Fetch from server cache (instant if cached)
+      const { stocks: enrichedStocks, timestamp } = await fetchCachedStocks()
+
+      setStocks(enrichedStocks)
 
       // Group stocks by sector
-      const grouped = groupStocksBySector(data)
+      const grouped = groupStocksBySector(enrichedStocks)
       setStocksBySector(grouped)
 
-      setLastUpdated(new Date())
+      setLastUpdated(new Date(timestamp))
     } catch (error) {
       console.error("Error fetching data:", error)
     } finally {
@@ -72,8 +80,9 @@ export default function RootPage() {
   useEffect(() => {
     fetchData()
 
-    // Set up polling for real-time updates
-    const intervalId = setInterval(fetchData, 60000) // Update every minute
+    // Poll cache every 30s — this is cheap since it reads from server cache
+    // The server heartbeat handles the actual scraping every 2 minutes
+    const intervalId = setInterval(() => fetchData(false), 30000)
 
     return () => clearInterval(intervalId)
   }, [])
@@ -108,7 +117,7 @@ export default function RootPage() {
               Your comprehensive dashboard for the Nepal stock market
             </p>
             <div className="flex justify-center">
-              <RefreshButton onRefresh={fetchData} lastUpdated={lastUpdated} />
+              <RefreshButton onRefresh={() => fetchData(true)} lastUpdated={lastUpdated} />
             </div>
           </div>
           {/* Market Overview Cards */}

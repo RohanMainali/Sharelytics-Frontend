@@ -20,14 +20,29 @@ import {
   ComposedChart,
   Brush,
 } from "recharts"
-import { fetchSharehubPriceHistory, type PriceHistoryData } from "@/app/actions/fetch-sharehub-price-history"
+import { fetchCachedPriceHistory } from "@/lib/cache-client"
+
+// Use a permissive type for chart data that supports both raw and computed fields
+interface ChartDataPoint {
+  date: string
+  open: number
+  high: number
+  low: number
+  close: number
+  volume: number
+  change?: number
+  changePercent?: number
+  turnover?: string
+  trades?: number
+  [key: string]: any // Allow indicator properties like sma, ema, rsi, macd, etc.
+}
 
 interface PriceHistoryChartProps {
   symbol: string
 }
 
 export function PriceHistoryChart({ symbol }: PriceHistoryChartProps) {
-  const [priceData, setPriceData] = useState<PriceHistoryData[]>([])
+  const [priceData, setPriceData] = useState<ChartDataPoint[]>([])
   const [loading, setLoading] = useState(true)
   const [timeframe, setTimeframe] = useState("1M") // 1W, 1M, 3M, 6M, 1Y, All
   const [chartType, setChartType] = useState("line") // line, area, candle
@@ -41,7 +56,19 @@ export function PriceHistoryChart({ symbol }: PriceHistoryChartProps) {
 
     const fetchData = async () => {
       try {
-        const data = await fetchSharehubPriceHistory(symbol)
+        const { data: rawData } = await fetchCachedPriceHistory(symbol)
+
+        // Map to chart data format
+        const data: ChartDataPoint[] = rawData.map(item => ({
+          date: item.date,
+          open: item.open,
+          high: item.high,
+          low: item.low,
+          close: item.close,
+          volume: item.volume,
+          change: item.change,
+          changePercent: item.changePercent,
+        }))
 
         // Filter data based on timeframe
         const filteredData = filterDataByTimeframe(data, timeframe)
@@ -61,7 +88,7 @@ export function PriceHistoryChart({ symbol }: PriceHistoryChartProps) {
   }, [symbol, timeframe, indicator])
 
   // Filter data based on timeframe
-  const filterDataByTimeframe = (data: PriceHistoryData[], timeframe: string): PriceHistoryData[] => {
+  const filterDataByTimeframe = (data: ChartDataPoint[], timeframe: string): ChartDataPoint[] => {
     if (!data.length) return []
 
     const today = new Date()
@@ -99,7 +126,7 @@ export function PriceHistoryChart({ symbol }: PriceHistoryChartProps) {
   }
 
   // Calculate technical indicators
-  const calculateIndicators = (data: PriceHistoryData[], indicator: string): PriceHistoryData[] => {
+  const calculateIndicators = (data: ChartDataPoint[], indicator: string): ChartDataPoint[] => {
     if (indicator === "none" || !data.length) return data
 
     const result = [...data]
