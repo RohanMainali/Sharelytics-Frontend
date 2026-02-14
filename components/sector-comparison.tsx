@@ -22,14 +22,15 @@ export function SectorComparison({ stocks }: SectorComparisonProps) {
     "Commercial Banks",
     "Development Banks",
     "Finance",
-    "Life Insurance",
-    "Non Life Insurance",
-    "Hydropower",
-    "Manufacturing and Processing",
-    "Microfinance",
+    "Hotels And Tourism",
+    "Hydro Power",
     "Investment",
-    "Hotel and Tourism",
-    "Trading",
+    "Life Insurance",
+    "Manufacturing And Processing",
+    "Microfinance",
+    "Mutual Fund",
+    "Non-Life Insurance",
+    "Others",
   ]
 
   useEffect(() => {

@@ -34,14 +34,15 @@ export function StockScreener({ stocks, onSelectSymbol }: StockScreenerProps) {
     { id: "commercial-banks", name: "Commercial Banks" },
     { id: "development-banks", name: "Development Banks" },
     { id: "finance", name: "Finance" },
-    { id: "life-insurance", name: "Life Insurance" },
-    { id: "non-life-insurance", name: "Non Life Insurance" },
-    { id: "hydropower", name: "Hydropower" },
-    { id: "manufacturing", name: "Manufacturing" },
-    { id: "microfinance", name: "Microfinance" },
+    { id: "hotels-and-tourism", name: "Hotels And Tourism" },
+    { id: "hydro-power", name: "Hydro Power" },
     { id: "investment", name: "Investment" },
-    { id: "hotel", name: "Hotel & Tourism" },
-    { id: "trading", name: "Trading" },
+    { id: "life-insurance", name: "Life Insurance" },
+    { id: "manufacturing", name: "Manufacturing And Processing" },
+    { id: "microfinance", name: "Microfinance" },
+    { id: "mutual-fund", name: "Mutual Fund" },
+    { id: "non-life-insurance", name: "Non-Life Insurance" },
+    { id: "others", name: "Others" },
   ]
 
   const handleFilterChange = (key: string, value: any) => {

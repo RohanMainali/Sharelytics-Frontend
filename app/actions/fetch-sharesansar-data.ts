@@ -62,7 +62,7 @@ export async function fetchSharesansarData(): Promise<SharesansarStock[]> {
         low: $(tds[7]).text().trim(),
         volume: $(tds[8]).text().trim(),
         prevClose: $(tds[9]).text().trim(),
-        sector: getSectorForSymbol(symbol),
+        sector: getSectorForSymbol(symbol) || "Others",
       }
 
       stocks.push(stock)

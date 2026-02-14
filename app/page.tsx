@@ -41,15 +41,15 @@ export default function RootPage() {
     "Commercial Banks": [],
     "Development Banks": [],
     Finance: [],
-    "Life Insurance": [],
-    "Non Life Insurance": [],
-    Hydropower: [],
-    "Manufacturing and Processing": [],
-    Microfinance: [],
+    "Hotels And Tourism": [],
+    "Hydro Power": [],
     Investment: [],
-    "Hotel and Tourism": [],
-    Trading: [],
-    Other: [],
+    "Life Insurance": [],
+    "Manufacturing And Processing": [],
+    Microfinance: [],
+    "Mutual Fund": [],
+    "Non-Life Insurance": [],
+    Others: [],
   })
 
   const fetchData = async (forceRefresh = false) => {
@@ -216,24 +216,24 @@ export default function RootPage() {
 
               <TabsContent value="non-life-insurance">
                 <SectorTable
-                  stocks={stocksBySector["Non Life Insurance"]}
-                  sectorName="Non Life Insurance"
+                  stocks={stocksBySector["Non-Life Insurance"]}
+                  sectorName="Non-Life Insurance"
                   onSelectSymbol={handleSelectSymbol}
                 />
               </TabsContent>
 
-              <TabsContent value="hydropower">
+              <TabsContent value="hydro-power">
                 <SectorTable
-                  stocks={stocksBySector["Hydropower"]}
-                  sectorName="Hydropower"
+                  stocks={stocksBySector["Hydro Power"]}
+                  sectorName="Hydro Power"
                   onSelectSymbol={handleSelectSymbol}
                 />
               </TabsContent>
 
               <TabsContent value="manufacturing">
                 <SectorTable
-                  stocks={stocksBySector["Manufacturing and Processing"]}
-                  sectorName="Manufacturing and Processing"
+                  stocks={stocksBySector["Manufacturing And Processing"]}
+                  sectorName="Manufacturing And Processing"
                   onSelectSymbol={handleSelectSymbol}
                 />
               </TabsContent>
@@ -254,18 +254,26 @@ export default function RootPage() {
                 />
               </TabsContent>
 
-              <TabsContent value="hotel">
+              <TabsContent value="hotels-and-tourism">
                 <SectorTable
-                  stocks={stocksBySector["Hotel and Tourism"]}
-                  sectorName="Hotel and Tourism"
+                  stocks={stocksBySector["Hotels And Tourism"]}
+                  sectorName="Hotels And Tourism"
                   onSelectSymbol={handleSelectSymbol}
                 />
               </TabsContent>
 
-              <TabsContent value="trading">
+              <TabsContent value="mutual-fund">
                 <SectorTable
-                  stocks={stocksBySector["Trading"]}
-                  sectorName="Trading"
+                  stocks={stocksBySector["Mutual Fund"]}
+                  sectorName="Mutual Fund"
+                  onSelectSymbol={handleSelectSymbol}
+                />
+              </TabsContent>
+
+              <TabsContent value="others">
+                <SectorTable
+                  stocks={stocksBySector["Others"]}
+                  sectorName="Others"
                   onSelectSymbol={handleSelectSymbol}
                 />
               </TabsContent>
